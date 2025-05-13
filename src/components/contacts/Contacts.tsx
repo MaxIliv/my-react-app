@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import ContactsList from './ContactsList';
 import ContactDetails from './ContactDetails';
+import EditContactForm from './EditContact';
 
 export type Contact = {
   id: string;
@@ -10,7 +11,7 @@ export type Contact = {
   tel: string;
 }
 
-type AppState = 'DEFAULT' | 'CONTACT_CREATE' | 'CONTACT_PREVIEW';
+type AppState = 'DEFAULT' | 'CONTACT_CREATE' | 'CONTACT_PREVIEW' | 'CONTACT_EDIT';
 
 function Contacts() {
   console.log('Contacts render');
@@ -37,9 +38,9 @@ function Contacts() {
 
   const isCreateNewContactState = appState === 'CONTACT_CREATE';
   const isContactPreview = appState === 'CONTACT_PREVIEW';
+  const isContactEdit = appState === 'CONTACT_EDIT';
 
   const contactsById = useMemo(() => {
-    console.log('Map Is renew!');
     return new Map(contacts.map(c => [c.id, c]))
   }, [contacts])
   const selectedContact = selectedContactId ? contactsById.get(selectedContactId) : null;
@@ -64,6 +65,23 @@ function Contacts() {
 
     setContacts([...contacts, newContact]);
     setSelectedContactId(newContact.id);
+    setAppState('CONTACT_PREVIEW');
+  }
+
+  const handleContactEdit = () => {
+    setAppState('CONTACT_EDIT');
+  }
+  const handleContactEditCancel = () => {
+    setAppState('CONTACT_PREVIEW');
+  }
+
+  const handleContactUpdate = (data: Contact) => {
+    // FIXME: contact order
+    setContacts(contacts.map((c) => {
+      if (c.id === data.id) return data;
+      return c;
+    }));
+
     setAppState('CONTACT_PREVIEW');
   }
 
@@ -95,7 +113,11 @@ function Contacts() {
 
         {
           isContactPreview && selectedContact &&
-          <ContactDetails contact={selectedContact} />
+          <ContactDetails contact={selectedContact} onEdit={handleContactEdit} />
+        }
+        {
+          isContactEdit && selectedContact && 
+          <EditContactForm contact={selectedContact} onUpdate={handleContactUpdate} onCancel={handleContactEditCancel} />
         }
       </div>
     </>
