@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import ContactsList from './ContactsList';
 import ContactDetails from './ContactDetails';
 import EditContactForm from './EditContact';
+import ContactForm from './ContactForm';
 
 export type Contact = {
   id: string;
@@ -55,11 +56,9 @@ function Contacts() {
     setAppState('CONTACT_PREVIEW');
   }
 
-  const handleNewContact = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget)
+  const handleNewContact = (e: Contact) => {
     const newContact: Contact = {
-      ...Object.fromEntries(formData) as Contact,
+      ...e,
       id: Date.now().toString(),
     }
 
@@ -95,19 +94,9 @@ function Contacts() {
         </div>
 
         {isCreateNewContactState &&
-          <div style={{ flex: '1' }}>
+          <div>
             New Contact
-            <form onSubmit={handleNewContact} style={{ display: 'flex', flexDirection: 'column', gap: '4px'}}>
-              <label htmlFor="firstName">First Name</label>
-              <input type="text" name="firstName" id="firstName" />
-              <label htmlFor="lastName">Last Name</label>
-              <input type="text" name="lastName" id="lastName" />
-              <label htmlFor="birthday">Birthday</label>
-              <input type="date" name="birthday" id="birthday" />
-              <label htmlFor="tel">Tel</label>
-              <input type="tel" name="tel" id="tel" />
-              <button type="submit">Submit new</button>
-            </form>
+            <ContactForm onSubmit={handleNewContact} />
           </div>
         }
 
