@@ -4,6 +4,7 @@ import ContactDetails from './ContactDetails';
 import EditContactForm from './EditContact';
 import ContactForm from './ContactForm';
 import SearchInput from './SearchInput';
+import { getContacts, saveContacts } from '../../utils/localStorage';
 
 export type Contact = {
   id: string;
@@ -19,22 +20,7 @@ function Contacts() {
   console.log('Contacts render');
 
   const [appState, setAppState] = useState<AppState>('DEFAULT');
-  const [contacts, setContacts] = useState<Contact[]>([
-    {
-      id: '1',
-      lastName: 'John',
-      firstName: 'John',
-      birthday: '2025-05-14',
-      tel: '123',
-    },
-    {
-      id: '2',
-      lastName: 'Larry',
-      firstName: 'Larry',
-      birthday: '2025-05-14',
-      tel: '123',
-    }
-  ]);
+  const [contacts, setContacts] = useState<Contact[]>(getContacts);
 
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -66,7 +52,9 @@ function Contacts() {
       id: Date.now().toString(),
     }
 
-    setContacts([...contacts, newContact]);
+    const newContacts = [...contacts, newContact];
+    setContacts(newContacts);
+    saveContacts(newContacts);
     setSelectedContactId(newContact.id);
     setAppState('CONTACT_PREVIEW');
   }
@@ -79,11 +67,13 @@ function Contacts() {
   }
 
   const handleContactUpdate = (data: Contact) => {
-    // FIXME: contact order
-    setContacts(contacts.map((c) => {
+    const updatedContacts = contacts.map((c) => {
       if (c.id === data.id) return data;
       return c;
-    }));
+    });
+
+    setContacts(updatedContacts);
+    saveContacts(updatedContacts);
 
     setAppState('CONTACT_PREVIEW');
   }
