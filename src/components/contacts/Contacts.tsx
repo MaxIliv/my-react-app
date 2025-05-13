@@ -3,6 +3,7 @@ import ContactsList from './ContactsList';
 import ContactDetails from './ContactDetails';
 import EditContactForm from './EditContact';
 import ContactForm from './ContactForm';
+import SearchInput from './SearchInput';
 
 export type Contact = {
   id: string;
@@ -36,14 +37,17 @@ function Contacts() {
   ]);
 
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
 
+  
   const isCreateNewContactState = appState === 'CONTACT_CREATE';
   const isContactPreview = appState === 'CONTACT_PREVIEW';
   const isContactEdit = appState === 'CONTACT_EDIT';
 
-  const contactsById = useMemo(() => {
-    return new Map(contacts.map(c => [c.id, c]))
-  }, [contacts])
+  const filteredContacts = contacts.filter((contact) => contact.firstName.toLowerCase().match(search.toLowerCase()));
+  const isEmptyContacts = filteredContacts.length === 0;
+
+  const contactsById = useMemo(() => new Map(contacts.map(c => [c.id, c])), [contacts]);
   const selectedContact = selectedContactId ? contactsById.get(selectedContactId) : null;
 
   const handleNewContactState = () => {
@@ -87,10 +91,13 @@ function Contacts() {
   return (
     <>
       <h1>Contacts List</h1>
+
       <div style={{ display: 'flex' }}>
         <div style={{ flex: '0 0 300px' }}>
+          <SearchInput value={search} onSearch={setSearch} />
           <button onClick={handleNewContactState}>Add new</button>
-          <ContactsList contacts={contacts} onSelect={handleContactSelect} />
+          <ContactsList contacts={filteredContacts} onSelect={handleContactSelect} />
+          {isEmptyContacts && <p>No results</p>}
         </div>
 
         {isCreateNewContactState &&
