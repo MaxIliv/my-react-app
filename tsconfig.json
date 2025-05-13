@@ -24,9 +24,11 @@
     "src/setupTests.ts"
   ],
   "include": [
-    "src"
+    "src/**/*.ts",
+    "src/**/*.tsx"
+    , "__tests__"
   ],
   "types": [
     "typePatches"
-  ]
+  ],
 }

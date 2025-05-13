@@ -1,0 +1,25 @@
+.word {
+  display: flex;
+  gap: 2px;
+  place-self: center;
+}
+.word + .word {
+  margin-top: 4px;
+}
+.letter {
+  border: 1px solid #333;
+  padding: 2px;
+  display: inline-block;
+  width: 30px;
+}
+
+.yellow {
+  border-color: yellowgreen;
+  background-color: yellow;
+  color: #333;
+}
+.green {
+  background-color: lightgreen;
+  border-color: green;
+  color: white;
+}
